@@ -67,18 +67,18 @@ func main() {
 package main
 
 import (
-	"fmt"
-	"github.com/kaudit/val"
+    "fmt"
+    "github.com/kaudit/val"
 )
 
 func main() {
-	email := "test@example.com"
-	err := val.ValidateWithTag(email, "email")
-	if err != nil {
-		fmt.Println("Validation error:", err)
-	} else {
-		fmt.Println("Validation passed!")
-	}
+    email := "test@example.com"
+    err := val.ValidateWithTag(email, "email")
+    if err != nil {
+        fmt.Println("Validation error:", err)
+    } else {
+        fmt.Println("Validation passed!")
+    }
 }
 ```
 
@@ -88,28 +88,29 @@ func main() {
 package main
 
 import (
-	"fmt"
-	"github.com/kaudit/val"
+    "fmt"
+    "github.com/go-playground/validator/v10"
+    "github.com/kaudit/val"
 )
 
 func main() {
-	// Register a custom validation rule "is-even"
-	err := RegisterValidation("is-even", func(fl validator.FieldLevel) bool {
-		return fl.Field().Int()%2 == 0
-	})
-	if err != nil {
-		fmt.Println("Failed to register validation rule:", err)
-		return
-	}
+    // Register a custom validation rule "is-even"
+    err := val.RegisterValidation("is-even", func(fl validator.FieldLevel) bool {
+        return fl.Field().Int()%2 == 0
+    })
+    if err != nil {
+        fmt.Println("Failed to register validation rule:", err)
+        return
+    }
 
-	// Validate a field using the custom rule
-	number := 4
-	err = ValidateWithTag(number, "is-even")
-	if err != nil {
-		fmt.Println("Validation error:", err)
-	} else {
-		fmt.Println("Validation passed!")
-	}
+    // Validate a field using the custom rule
+    number := 4
+    err = val.ValidateWithTag(number, "is-even")
+    if err != nil {
+        fmt.Println("Validation error:", err)
+    } else {
+        fmt.Println("Validation passed!")
+    }
 }
 ```
 
@@ -118,42 +119,101 @@ func main() {
 ### Available Functions
 
 #### `ValidateStruct(s any) error`
-Validates a struct based on its validation tags.
-Ensures the input is a valid struct or a pointer to a struct.
-Validates the struct fields based on their tags.
+Validates a struct based on its validation tags.  
+Ensures the input is a valid struct or a pointer to a struct.  
+Validates the struct fields based on their tags.  
 Returns detailed, formatted errors for each validation failure.
 
 #### `ValidateWithTag(variable any, tag string) error`
-Validates a single variable using a specified validation tag.
-Uses the go-playground validator to validate the `variable` against the provided `tag`.
+Validates a single variable using a specified validation tag.  
+Uses the go-playground validator to validate the `variable` against the provided `tag`.  
 If validation fails, it processes and returns a structured error.
 
 #### `RegisterValidation(tag string, fn validator.Func) error`
-Registers registers a custom validation function for a specific tag.
+Registers a custom validation function for a specific tag.
 
 ## Custom Validation Rules
 
 ### `url_prefix`
-The `url_prefix` validation rule ensures that a string starts with either `http://` or `https://`.
+Ensures that a string starts with either `http://` or `https://`.
 
-Example:
+Example usage:
 
 ```go
 package main
 
 import (
-	"fmt"
-	"github.com/kaudit/val"
+    "fmt"
+    "github.com/kaudit/val"
 )
 
 func main() {
-	url := "https://example.com"
-	err := val.ValidateWithTag(url, "url_prefix")
-	if err != nil {
-		fmt.Println("Validation error:", err)
-	} else {
-		fmt.Println("Validation passed!")
-	}
+    url := "https://example.com"
+    err := val.ValidateWithTag(url, "url_prefix")
+    if err != nil {
+        fmt.Println("Validation error:", err)
+    } else {
+        fmt.Println("Validation passed!")
+    }
+}
+```
+
+### `k8s_label_selector`
+Ensures that a string represents a valid Kubernetes label selector. This validator rejects empty values and checks the syntax against Kubernetes label-selector parsing rules.
+
+Example usage:
+
+```go
+package main
+
+import (
+    "fmt"
+    "github.com/kaudit/val"
+)
+
+func main() {
+    selector := "app=myapp,env=dev"
+    err := val.ValidateWithTag(selector, "k8s_label_selector")
+    if err != nil {
+        fmt.Println("Validation error:", err)
+    } else {
+        fmt.Println("Validation passed!")
+    }
+}
+```
+
+### `k8s_field_selector`
+Ensures that a string represents a valid Kubernetes field selector. This validator also enforces a whitelist of recognized field keys to prevent invalid fields.
+
+The following field keys are currently allowed:
+- `metadata.name`
+- `metadata.namespace`
+- `status.phase`
+- `spec.nodeName`
+- `spec.unschedulable`
+- `status.hostIP`
+- `status.podIP`
+
+Any other field keys will cause the validation to fail.
+
+Example usage:
+
+```go
+package main
+
+import (
+    "fmt"
+    "github.com/kaudit/val"
+)
+
+func main() {
+    fieldSel := "metadata.name=my-pod"
+    err := val.ValidateWithTag(fieldSel, "k8s_field_selector")
+    if err != nil {
+        fmt.Println("Validation error:", err)
+    } else {
+        fmt.Println("Validation passed!")
+    }
 }
 ```
 
