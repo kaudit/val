@@ -93,6 +93,8 @@ func newValidator() *validator.Validate {
 	val := validator.New(validator.WithRequiredStructEnabled())
 
 	urlPrefixValidator(val)
+	labelSelectorValidator(val)
+	fieldSelectorValidator(val)
 
 	return val
 }
