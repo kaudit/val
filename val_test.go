@@ -30,7 +30,7 @@ func TestHandleValidatorError(t *testing.T) {
 		resultErr := handleValidatorError(err)
 
 		require.Error(t, resultErr)
-		assert.Equal(t, expectedErr, expectedErr)
+		assert.Contains(t, resultErr.Error(), expectedErr)
 	})
 
 	t.Run("unexpected error", func(t *testing.T) {
