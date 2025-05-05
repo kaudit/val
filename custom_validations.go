@@ -63,6 +63,7 @@ func fieldSelectorValidator(v *validator.Validate) {
 			"spec.unschedulable": {},
 			"status.hostIP":      {},
 			"status.podIP":       {},
+			"spec.type":          {},
 		}
 
 		value := fl.Field().String()
