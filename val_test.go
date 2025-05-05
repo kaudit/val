@@ -243,6 +243,9 @@ func TestFieldSelectorValidator_AllSyntax(t *testing.T) {
 		{"DoubleEqual", fieldSelectorInput{"metadata.name==default"}, true},
 		{"NotEqual", fieldSelectorInput{"metadata.name!=kube-system"}, true},
 		{"MultipleAND", fieldSelectorInput{"metadata.name=default,status.phase=Running"}, true},
+		{"SpecType", fieldSelectorInput{"spec.type=ClusterIP"}, true},
+		{"SpecTypeNotEqual", fieldSelectorInput{"spec.type!=NodePort"}, true},
+		{"SpecTypeWithOthers", fieldSelectorInput{"metadata.namespace=default,spec.type=LoadBalancer"}, true},
 
 		// invalid syntax
 		{"InvalidOperator", fieldSelectorInput{"metadata.name~value"}, false},
