@@ -193,6 +193,7 @@ The following field keys are currently allowed:
 - `spec.unschedulable`
 - `status.hostIP`
 - `status.podIP`
+- `spec.type`
 
 Any other field keys will cause the validation to fail.
 
